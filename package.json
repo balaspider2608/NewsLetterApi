@@ -1,0 +1,24 @@
+{
+  "name": "newsletterapi",
+  "version": "0.0.1",
+  "description": "The backend for newsletter frontend",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Nandan A",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "gulp": "^4.0.0",
+    "gulp-mocha": "^6.0.0",
+    "gulp-nodemon": "^2.2.1",
+    "sinon": "^6.3.5"
+  },
+  "devDependencies": {
+    "gulp-env": "^0.4.0",
+    "node-env": "^0.1.6"
+  }
+}
