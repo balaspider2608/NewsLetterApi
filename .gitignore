@@ -23,3 +23,4 @@ yarn-error.log*
 .vs/VSWorkspaceState.json
 .vs/slnx.sqlite
 .vs/NewsLetterApi/v15/.suo
+app.log

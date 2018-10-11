@@ -1,20 +1,3 @@
-// var gulp = require('gulp'),
-//     nodemon = require('gulp-nodemon'),
-//     env = require('gulp-env');
-
-// gulp.task('default', () => {
-//     nodemon({
-//         script: 'app.js',
-//         ext: 'js',
-//         env: {
-//             PORT: 8000
-//         },
-//         ignore: ['./node_modules/**']
-//     }).on('restart', () => {
-//         console.log('restarting');
-//     });
-// });
-
 var _ = require('lodash'),
     defaultAssets = require('./config/assets/default'),
     gulp = require('gulp'),
@@ -23,8 +6,9 @@ var _ = require('lodash'),
     plugins = gulpLoadPlugins();
 
 //set the default environment
-gulp.task('env:dev', () => {
-    process.env.NODE_ENV = 'development'
+gulp.task('env:dev', (done) => {
+    process.env.NODE_ENV = 'development';
+    done();
 });
 
 //nodemon task
@@ -42,7 +26,7 @@ gulp.task('nodemon', () => {
     });
 });
 
-gulp.task('default', (done) => {
-    runSequence('env:dev', 'nodemon', done)
+gulp.task('default', gulp.series('env:dev', 'nodemon') , () => {
+    console.log(process.env.NODE_ENV);
 });
 

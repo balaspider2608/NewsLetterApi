@@ -9,7 +9,7 @@ var _ = require('lodash'),
 // Intialize Mongoose connection
 module.exports.connect = function (callback) {
     mongoose.Promise = config.db.promise;
-    var options = _.merge(config.db.options || {}, { useMongoClient: true });
+    var options = config.db.options || {};
     mongoose
         .connect(config.db.uri, options)
         .then((connection) => {
@@ -25,7 +25,6 @@ module.exports.connect = function (callback) {
 
 
 //Disconnect from Mongoose
-
 module.exports.disconnect = function (cb) {
     mongoose.connection.db
         .close((err) => {

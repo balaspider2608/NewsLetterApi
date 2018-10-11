@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash'),
     config = require('../config'),
     chalk = require('chalk'),
@@ -20,15 +22,15 @@ var logger = new winston.Logger({
 });
 
 
-logger.steam = {
+logger.stream = {
     write: (msg) => {
         logger.info(msg);
     }
 };
 
 
-logger.setupFileLogger = () => {
-    var fileLogger = this.getLogOptions();
+logger.setupFileLogger = function setupFileLogger () {
+    var fileLoggerTransport = this.getLogOptions();
     if (!fileLoggerTransport) {
         return false;
     }
@@ -45,7 +47,7 @@ logger.setupFileLogger = () => {
     return false;
 }
 
-logger.getLogOptions = () => {
+logger.getLogOptions = function getLogOptions() {
     var _config = _.clone(config, true);
     var configFileLogger = _config.log.fileLogger;
 
@@ -72,13 +74,13 @@ logger.getLogOptions = () => {
     };
 };
 
-logger.getMorganOptions = () => {
+logger.getMorganOptions = function getMorganOptions() {
     return {
         stream: logger.stream
     };
 };
 
-logger.getLogFormat = () => {
+logger.getLogFormat = function getLogFormat() {
     var format = config.log && config.log.format ? config.log.format.toString() : 'combined';
 
     // make sure we have a valid format

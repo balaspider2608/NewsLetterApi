@@ -8,7 +8,7 @@ var config = require('../config'),
     cors = require('cors');
 
 
-var whiteList = ['http://localhost:3000'];
+var whitelist = config.cors.whiteList;
 
 var corsOptionsDelegate = (req, callback) => {
     var corsOptions;
@@ -34,8 +34,15 @@ module.exports.initMiddleware = (app) => {
     }
 }
 
+module.exports.initModuleRoutes = (app) => {
+    config.files.server.routes.forEach((routePath) => {
+        require(path.resolve(routePath))(app);
+    });
+}
+
 module.exports.init = (db) => {
     var app = express();
     this.initMiddleware(app);
+    this.initModuleRoutes(app);
     return app;
 }
