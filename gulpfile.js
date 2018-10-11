@@ -1,7 +1,6 @@
 var _ = require('lodash'),
     defaultAssets = require('./config/assets/default'),
     gulp = require('gulp'),
-    runSequence = require('run-sequence'),
     gulpLoadPlugins = require('gulp-load-plugins'),
     plugins = gulpLoadPlugins();
 
@@ -10,6 +9,27 @@ gulp.task('env:dev', (done) => {
     process.env.NODE_ENV = 'development';
     done();
 });
+
+gulp.task('eslint', () => {
+    var assets = _.union(
+        defaultAssets.server.allJS,
+        defaultAssets.server.gulpConfig,
+        defaultAssets.server.models,
+        defaultAssets.server.routes
+    );
+    return gulp.src(assets)
+    .pipe(plugins.eslint())
+    .pipe(plugins.eslint.format())
+    .pipe(plugins.eslint.failAfterError());
+});
+
+//all the muiltple linting
+// gulp.task('lint', gulp.series('eslint'), (done) => {
+//     done();
+// });
+
+//watch file changes
+
 
 //nodemon task
 gulp.task('nodemon', () => {
