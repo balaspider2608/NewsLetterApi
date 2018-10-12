@@ -5,6 +5,14 @@ var _ = require('lodash'),
     mongoose = require('mongoose');
 
 
+module.exports.loadModels = (callback) => {
+    console.log(config.files.server.models)
+    config.files.server.models.forEach((modelPath) => {
+        require(path.resolve(modelPath));
+    });
+
+    if (callback) callback();
+}
 
 // Intialize Mongoose connection
 module.exports.connect = function (callback) {
