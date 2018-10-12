@@ -57,6 +57,7 @@ var initGlobalConfigFiles = (config, assets) => {
     config.files = {
         server: {}
     }
+    config.files.server.models = getGlobbedPaths(assets.server.models);
     config.files.server.routes = getGlobbedPaths(assets.server.routes);
 }
 
