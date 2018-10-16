@@ -1,7 +1,7 @@
-import content_length from './content_length.validator';
+var content_length = require('./content_length.validator');
 
 const validators = {
     lengthValidator: content_length
 };
 
-export default validators;
+module.exports =  validators;

@@ -1,7 +1,8 @@
-import validators from '../../lib/validator';
+// import validators from '../../lib/validator';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    validators = require('../../lib/validator');
 
 
 var UserSchema = new Schema({
@@ -12,19 +13,17 @@ var UserSchema = new Schema({
     name: {
         type: String,
         default: 'Anonymous',
-        alias: 'User Name'
     }, 
     email: {
         type: String,
         default: 'User like to be Anonymous',
-        alias: 'Email ID'
     },
     blogs: [{
         type: Schema.Types.ObjectId,
         ref: 'Blog'
     }],
     img: {
-        alias: 'User Image',
+        type: String,
         default: 'Default Image'
     }
 });

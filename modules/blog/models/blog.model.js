@@ -15,17 +15,14 @@ var ArticleSchema = new Schema({
         type: String,
         default: 'Something is really funny about this article.',
         required: [true, 'The article attracts more people with subtitle.'],
-        alias: 'Sub Title'
     },
     body: {
         type: String,
         required: [true, 'A blog with content is intresting!!!!'],
-        alias: 'Article Content'
     },
     cim: {
         type: String,
         default: 'Cover Page image',
-        alias: 'Cover Image'
     },
     author: {
         type: Schema.Types.ObjectId,

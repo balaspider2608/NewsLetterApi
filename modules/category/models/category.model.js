@@ -1,7 +1,8 @@
-import validators from '../../lib/validator';
+// import validators from '../../lib/validator';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;  
+    Schema = mongoose.Schema,
+    validators = require('../../lib/validator');  
     // path = require('path');
     // chalk = require('chalk');
 
