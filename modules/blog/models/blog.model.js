@@ -1,19 +1,16 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    // path = require('path');
-    // chalk = require('chalk');
+    Schema = mongoose.Schema;
 
-var CategorySchema = new Schema({
+var ArticleSchema = new Schema({
     created: {
         type: Date,
         default: Date.now
     },
     title: {
         type: String,
-        default: '',
+        default: 'No title',
         trim: true,
         required: 'Title cannot be blank'
     }
-});
-
-mongoose.model('Category', CategorySchema);
+})
+    
