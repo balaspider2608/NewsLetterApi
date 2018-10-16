@@ -6,7 +6,6 @@ var _ = require('lodash'),
 
 
 module.exports.loadModels = (callback) => {
-    console.log(config.files.server.models)
     config.files.server.models.forEach((modelPath) => {
         require(path.resolve(modelPath));
     });
