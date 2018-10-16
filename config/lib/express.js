@@ -34,15 +34,15 @@ module.exports.initMiddleware = (app) => {
     }
 }
 
-module.exports.initModuleRoutes = (app) => {
+module.exports.initModuleRoutes = (app, models) => {
     config.files.server.routes.forEach((routePath) => {
-        require(path.resolve(routePath))(app);
+        require(path.resolve(routePath))(app, models);
     });
 }
 
-module.exports.init = (db) => {
+module.exports.init = (db, models) => {
     var app = express();
     this.initMiddleware(app);
-    this.initModuleRoutes(app);
+    this.initModuleRoutes(app, models);
     return app;
 }

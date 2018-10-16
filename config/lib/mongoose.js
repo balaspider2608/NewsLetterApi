@@ -6,11 +6,14 @@ var _ = require('lodash'),
 
 
 module.exports.loadModels = (callback) => {
+    var models = new Object();
     config.files.server.models.forEach((modelPath) => {
-        require(path.resolve(modelPath));
+        let model = require(path.resolve(modelPath));
+        if(model && !models.hasOwnProperty(model.modelName)){
+            models['' + model.modelName] = model;
+        }
     });
-
-    if (callback) callback();
+    if (callback) callback(models);
 }
 
 // Intialize Mongoose connection

@@ -34,4 +34,4 @@ var ArticleSchema = new Schema({
     }
 });
 
-mongoose.model('Blog', ArticleSchema);    
+module.exports = mongoose.model('Blog', ArticleSchema);    

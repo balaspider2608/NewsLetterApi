@@ -5,10 +5,15 @@ var config = require('../config'),
 
 module.exports.init = (callback) => {
     mongooseService.connect(db => {
-        mongooseService.loadModels()
-        var app = express.init(db);
-        if (callback)
-            callback(app, db, config);
+        mongooseService.loadModels((models) => {
+            var app = express.init(db, models);
+            if (callback) {
+                callback(app, db, config);
+            }
+        });
+        // var app = express.init(db);
+        // if (callback)
+        //     callback(app, db, config);
     });
 };
 
