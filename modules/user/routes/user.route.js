@@ -1,11 +1,12 @@
 var users = require('../controller/user.controller');
 
-module.exports = (app) => {
+module.exports = (app, { User }) => {
     //for Users to create 
+    var userController = require('../controller/user.controller')(User);
     app.route('/api/Users')
-    .get(users.list)
-    .post(users.create);
+        .get(userController.list)
+        .post(userController.create);
 
     app.route('/api/Users/:userId')
-     .get(users.getByEmailId);
+        .get(userController.getByEmailId);
 }
