@@ -17,6 +17,7 @@ var UserSchema = new Schema({
     email: {
         type: String,
         default: 'User like to be Anonymous',
+        required:true
     },
     blogs: [{
         type: Schema.Types.ObjectId,
