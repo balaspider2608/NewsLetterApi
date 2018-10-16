@@ -9,8 +9,32 @@ var ArticleSchema = new Schema({
     title: {
         type: String,
         default: 'No title',
-        trim: true,
-        required: 'Title cannot be blank'
+        required: [true, 'Why no title?']
+    },
+    stitle: {
+        type: String,
+        default: 'Something is really funny about this article.',
+        required: [true, 'The article attracts more people with subtitle.'],
+        alias: 'Sub Title'
+    },
+    body: {
+        type: String,
+        required: [true, 'A blog with content is intresting!!!!'],
+        alias: 'Article Content'
+    },
+    cim: {
+        type: String,
+        default: 'Cover Page image',
+        alias: 'Cover Image'
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
     }
-})
-    
+});
+
+mongoose.model('Blog', ArticleSchema);    
