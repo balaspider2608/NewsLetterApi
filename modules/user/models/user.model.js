@@ -13,16 +13,12 @@ var UserSchema = new Schema({
     name: {
         type: String,
         default: 'Anonymous',
-    }, 
+    },
     email: {
         type: String,
         default: 'User like to be Anonymous',
-        required:true
+        required: true
     },
-    blogs: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Blog'
-    }],
     img: {
         type: String,
         default: 'Default Image'

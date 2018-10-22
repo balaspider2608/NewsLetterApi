@@ -1,10 +1,7 @@
-// import validators from '../../lib/validator';
-
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     validators = require('../../lib/validator');  
-    // path = require('path');
-    // chalk = require('chalk');
+    chalk = require('chalk');
 
 var CategorySchema = new Schema({
     created: {
