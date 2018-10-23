@@ -3,4 +3,6 @@ module.exports = (app, { Category, Blog }) => {
     app.route('/api/Blog')
         .get(blogController.getArticle)
         .post(blogController.create);
+    app.route('/api/Blog/picture')
+        .post(blogController.uploadImage);
 }

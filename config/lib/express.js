@@ -34,6 +34,15 @@ module.exports.initMiddleware = (app) => {
     }
 }
 
+module.exports.initStaticFiles = (app) => {
+    if (_.has(config, 'static')) {
+        Object.keys(config.static)
+            .forEach(key =>
+                app.use('/static', express.static(config.static[key]))
+            );
+    }
+}
+
 module.exports.initModuleRoutes = (app, models) => {
     config.files.server.routes.forEach((routePath) => {
         require(path.resolve(routePath))(app, models);
@@ -44,5 +53,6 @@ module.exports.init = (db, models) => {
     var app = express();
     this.initMiddleware(app);
     this.initModuleRoutes(app, models);
+    this.initStaticFiles(app);
     return app;
 }

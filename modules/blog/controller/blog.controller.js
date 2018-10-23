@@ -1,5 +1,8 @@
 var _ = require('lodash'),
-    chalk = require('chalk');
+    chalk = require('chalk'),
+    path = require('path'),
+    multer = require('multer'),
+    config = require(path.resolve('./config/config'));
 
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
@@ -59,9 +62,9 @@ var blogController = (Category, Blog) => {
             console.log(toDate);
             console.log(fromDate);
             query['category'] = categoryId,
-            queryBuilder = queryBuilder
-                .where('created').gt(new Date(fromDate)).lt(new Date(toDate))
-                .select('title stitle cim');
+                queryBuilder = queryBuilder
+                    .where('created').gt(new Date(fromDate)).lt(new Date(toDate))
+                    .select('title stitle cim');
         } else if (blogId) {
             query['_id'] = blogId
         } else if (userId) {
@@ -83,9 +86,54 @@ var blogController = (Category, Blog) => {
             }
         });
     }
+    var blogImages = (req, res) => {
+        var multerConfig;
+        // multerConfig = config.uploads.blog.image;
+        if(config.uploads.storage === 'local'){
+            multerConfig = {
+                storage: multer.diskStorage({
+                    destination: function (req, file, cb) {
+                        cb(null, config.uploads.blog.image.dest)
+                    }, filename: function (req, file, cb) {
+                        cb(null, file.originalname)
+                    }
+                })
+            }
+        }
+        //upload image only        
+        multerConfig.fileFilter = require(path.resolve('./config/lib/multer')).imageFileFilter;
+
+        var upload = multer(multerConfig).single('image');
+        // console.log(multerConfig);
+        uploadImage()
+            .then(() => {
+                res.json({
+                    message: 'Success'
+                });
+            })
+            .catch(function (err) {
+                res.status(422).send(err);
+            })
+
+        function uploadImage() {
+            return new Promise((res, reject) => {
+                upload(req, res, (uploadError) => {
+                    if (uploadError) {
+                        console.log(chalk.red('Upload image error'));
+                        console.log(uploadError);
+                        reject(uploadError)
+                    } else {
+                        res();
+                    }
+                })
+            })
+        }
+    }
+
     return {
         create: create,
-        getArticle: getArticle
+        getArticle: getArticle,
+        uploadImage: blogImages
     }
 }
 
