@@ -12,7 +12,6 @@ var whitelist = config.cors.whiteList;
 
 var corsOptionsDelegate = (req, callback) => {
     var corsOptions;
-
     if (whitelist.indexOf(req.header('Origin')) !== -1) {
         corsOptions = { origin: true };
     } else {

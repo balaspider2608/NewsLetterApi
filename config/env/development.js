@@ -22,7 +22,7 @@ module.exports = {
         title: defaultConfig.app.title + '- Development Environment'
     },
     cors: {
-        whiteList: ['localhost:3000']
+        whiteList: ['http://localhost:3000']
     },
     livereload: true
 }

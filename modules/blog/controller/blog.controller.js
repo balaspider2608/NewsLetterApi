@@ -87,47 +87,52 @@ var blogController = (Category, Blog) => {
         });
     }
     var blogImages = (req, res) => {
-        var multerConfig;
-        // multerConfig = config.uploads.blog.image;
-        if(config.uploads.storage === 'local'){
-            multerConfig = {
-                storage: multer.diskStorage({
-                    destination: function (req, file, cb) {
-                        cb(null, config.uploads.blog.image.dest)
-                    }, filename: function (req, file, cb) {
-                        cb(null, file.originalname)
-                    }
+        //verify if content is available
+        // if (!_.isEmpty(req.body)) {
+            var multerConfig;
+            if (config.uploads.storage === 'local') {
+                multerConfig = {
+                    storage: multer.diskStorage({
+                        destination: function (req, file, cb) {
+                            cb(null, config.uploads.blog.image.dest)
+                        }, filename: function (req, file, cb) {
+                            console.log(file);
+                            cb(null, file.originalname)
+                        }
+                    })
+                }
+            }
+            //upload image only        
+            multerConfig.fileFilter = require(path.resolve('./config/lib/multer')).imageFileFilter;
+            var upload = multer(multerConfig).single('image');
+            uploadImage()
+                .then((loc) => {
+                    res.json(loc);
+                })
+                .catch(function (err) {
+                    res.status(422).send(err);
+                })
+
+            function uploadImage() {
+                return new Promise((resolve, reject) => {
+                    upload(req, res, (uploadError) => {
+                        if (uploadError) {
+                            console.log(chalk.red('Upload image error'));
+                            console.log(uploadError);
+                            reject(uploadError)
+                        } else {
+                            resolve({
+                                location: 'http://' + config.host + ':' + config.port + '/static/' + req.file.originalname
+                            });
+                        }
+                    })
                 })
             }
-        }
-        //upload image only        
-        multerConfig.fileFilter = require(path.resolve('./config/lib/multer')).imageFileFilter;
-
-        var upload = multer(multerConfig).single('image');
-        // console.log(multerConfig);
-        uploadImage()
-            .then(() => {
-                res.json({
-                    message: 'Success'
-                });
-            })
-            .catch(function (err) {
-                res.status(422).send(err);
-            })
-
-        function uploadImage() {
-            return new Promise((res, reject) => {
-                upload(req, res, (uploadError) => {
-                    if (uploadError) {
-                        console.log(chalk.red('Upload image error'));
-                        console.log(uploadError);
-                        reject(uploadError)
-                    } else {
-                        res();
-                    }
-                })
-            })
-        }
+        // } else {
+        //     res.status(422).send({
+        //         message: 'No file attached'
+        //     });
+        // }
     }
 
     return {
