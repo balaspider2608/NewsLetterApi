@@ -1,6 +1,6 @@
 var _ = require('lodash'),
     chalk = require('chalk');
-
+    
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
         if (req.body.blog && req.body.userId && req.body.categoryId) {
@@ -50,22 +50,19 @@ var blogController = (Category, Blog) => {
     var getArticle = (req, res) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
         let query = {};
-        let queryBuilder = Blog.list(query);
-        if (categoryId && fromDate) {
-            fromDate = new Date(fromDate);
-            // console.log(toDate);
-            console.log(fromDate);
-            let toDate = new Date(fromDate.getMonth() - 1);
-            console.log(toDate);
-            console.log(fromDate);
-            query['category'] = categoryId,
-            queryBuilder = queryBuilder
-                .where('created').gt(new Date(fromDate)).lt(new Date(toDate))
-                .select('title stitle cim');
+        let presentMonth = new Date().getMonth();
+      
+        if(fromDate)
+         presentMonth = new Date(fromDate).getMonth();
+         let queryBuilder =    Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth-2] } })
+    
+        if (categoryId) {
+            queryBuilder['category'] = categoryId
+        
         } else if (blogId) {
-            query['_id'] = blogId
+            queryBuilder['_id'] = blogId
         } else if (userId) {
-            query['author'] = userId
+            queryBuilder['author'] = userId
         } else {
             return res.status(422).send({
                 message: 'No query specified'
@@ -74,7 +71,6 @@ var blogController = (Category, Blog) => {
         queryBuilder.exec((err, articles) => {
             if (err) {
                 console.log(chalk.red('Error occured'));
-                console.log(err);
                 return res.status(422).send({
                     messgae: 'Error occured'
                 });
