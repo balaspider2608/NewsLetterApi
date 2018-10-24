@@ -1,9 +1,14 @@
 var _ = require('lodash'),
+<<<<<<< HEAD
     chalk = require('chalk'),
     path = require('path'),
     multer = require('multer'),
     config = require(path.resolve('./config/config'));
 
+=======
+    chalk = require('chalk');
+    
+>>>>>>> 0024eaeb5d7b94db92ebee74795cca9e073eb01e
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
         if (req.body.blog && req.body.userId && req.body.categoryId) {
@@ -53,6 +58,7 @@ var blogController = (Category, Blog) => {
     var getArticle = (req, res) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
         let query = {};
+<<<<<<< HEAD
         let queryBuilder = Blog.list(query);
         if (categoryId && fromDate) {
             fromDate = new Date(fromDate);
@@ -65,10 +71,21 @@ var blogController = (Category, Blog) => {
                 queryBuilder = queryBuilder
                     .where('created').gt(new Date(fromDate)).lt(new Date(toDate))
                     .select('title stitle cim');
+=======
+        let presentMonth = new Date().getMonth();
+      
+        if(fromDate)
+         presentMonth = new Date(fromDate).getMonth();
+         let queryBuilder =    Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth-2] } })
+    
+        if (categoryId) {
+            queryBuilder['category'] = categoryId
+        
+>>>>>>> 0024eaeb5d7b94db92ebee74795cca9e073eb01e
         } else if (blogId) {
-            query['_id'] = blogId
+            queryBuilder['_id'] = blogId
         } else if (userId) {
-            query['author'] = userId
+            queryBuilder['author'] = userId
         } else {
             return res.status(422).send({
                 message: 'No query specified'
@@ -77,7 +94,6 @@ var blogController = (Category, Blog) => {
         queryBuilder.exec((err, articles) => {
             if (err) {
                 console.log(chalk.red('Error occured'));
-                console.log(err);
                 return res.status(422).send({
                     messgae: 'Error occured'
                 });
