@@ -1,14 +1,9 @@
 var _ = require('lodash'),
-<<<<<<< HEAD
     chalk = require('chalk'),
     path = require('path'),
     multer = require('multer'),
     config = require(path.resolve('./config/config'));
 
-=======
-    chalk = require('chalk');
-    
->>>>>>> 0024eaeb5d7b94db92ebee74795cca9e073eb01e
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
         if (req.body.blog && req.body.userId && req.body.categoryId) {
@@ -58,20 +53,6 @@ var blogController = (Category, Blog) => {
     var getArticle = (req, res) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
         let query = {};
-<<<<<<< HEAD
-        let queryBuilder = Blog.list(query);
-        if (categoryId && fromDate) {
-            fromDate = new Date(fromDate);
-            // console.log(toDate);
-            console.log(fromDate);
-            let toDate = new Date(fromDate.getMonth() - 1);
-            console.log(toDate);
-            console.log(fromDate);
-            query['category'] = categoryId,
-                queryBuilder = queryBuilder
-                    .where('created').gt(new Date(fromDate)).lt(new Date(toDate))
-                    .select('title stitle cim');
-=======
         let presentMonth = new Date().getMonth();
       
         if(fromDate)
@@ -81,7 +62,6 @@ var blogController = (Category, Blog) => {
         if (categoryId) {
             queryBuilder['category'] = categoryId
         
->>>>>>> 0024eaeb5d7b94db92ebee74795cca9e073eb01e
         } else if (blogId) {
             queryBuilder['_id'] = blogId
         } else if (userId) {
