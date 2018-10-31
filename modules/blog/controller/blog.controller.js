@@ -2,7 +2,8 @@ var _ = require('lodash'),
     chalk = require('chalk'),
     path = require('path'),
     multer = require('multer'),
-    config = require(path.resolve('./config/config'));
+    config = require(path.resolve('./config/config')),
+    uuid = require('uuid/v4');
 
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
@@ -92,8 +93,7 @@ var blogController = (Category, Blog) => {
                         destination: function (req, file, cb) {
                             cb(null, config.uploads.blog.image.dest)
                         }, filename: function (req, file, cb) {
-                            console.log(file);
-                            cb(null, file.originalname)
+                            cb(null, uuid() + '.' + file.mimetype.split('/').pop())
                         }
                     })
                 }
@@ -117,9 +117,15 @@ var blogController = (Category, Blog) => {
                             console.log(uploadError);
                             reject(uploadError)
                         } else {
-                            resolve({
-                                location: 'http://' + config.host + ':' + config.port + '/static/' + req.file.originalname
-                            });
+                            console.log(req.file);
+                            if(req.file)
+                                resolve({
+                                    location: 'http://' + config.host + ':' + config.port + '/static/' + req.file.filename
+                                });
+                            else 
+                                reject({
+                                    message: 'No file specified'
+                                });
                         }
                     })
                 })
