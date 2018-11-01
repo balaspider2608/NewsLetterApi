@@ -6,7 +6,8 @@ module.exports = (app, { User }) => {
     app.route('/api/Users')
         .get(userController.list)
         .post(userController.create);
-
+    app.route('/api/Users/picture')
+        .post(userController.uploadImage);
     app.route('/api/Users/:userId')
         .get(userController.getByEmailId);
 }

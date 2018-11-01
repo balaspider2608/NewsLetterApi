@@ -5,6 +5,7 @@ var config = require('../config'),
     bodyParser = require('body-parser'),
     path = require('path'),
     _ = require('lodash'),
+    ntlm = require('express-ntlm'),
     cors = require('cors');
 
 
@@ -31,6 +32,8 @@ module.exports.initMiddleware = (app) => {
     if (_.has(config, 'log.format')) {
         app.use(morgan(logger.getLogFormat(), logger.getMorganOptions()));
     }
+
+    // app.use(ntlm());
 }
 
 module.exports.initStaticFiles = (app) => {

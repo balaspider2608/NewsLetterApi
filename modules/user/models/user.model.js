@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    validators = require('../../lib/validator');
+    { lengthValidator } = require('../../lib');
 
 
 var UserSchema = new Schema({

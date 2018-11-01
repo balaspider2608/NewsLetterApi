@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    validators = require('../../lib/validator');  
+    { lengthValidator } = require('../../lib');  
     chalk = require('chalk');
 
 var CategorySchema = new Schema({
@@ -13,7 +13,7 @@ var CategorySchema = new Schema({
         default: '',
         trim: true,
         required: 'Title cannot be blank',
-        validate: [validators.lengthValidator({
+        validate: [lengthValidator({
             length: {
                 min: 3,
                 max: 20

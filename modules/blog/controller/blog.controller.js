@@ -1,9 +1,8 @@
 var _ = require('lodash'),
     chalk = require('chalk'),
     path = require('path'),
-    multer = require('multer'),
     config = require(path.resolve('./config/config')),
-    uuid = require('uuid/v4');
+    { imageUpload } = require('../../lib');
 
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
@@ -55,14 +54,14 @@ var blogController = (Category, Blog) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
         let query = {};
         let presentMonth = new Date().getMonth();
-      
-        if(fromDate)
-         presentMonth = new Date(fromDate).getMonth();
-         let queryBuilder =    Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth-2] } })
-    
+
+        if (fromDate)
+            presentMonth = new Date(fromDate).getMonth();
+        let queryBuilder = Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth - 2] } })
+
         if (categoryId) {
             queryBuilder['category'] = categoryId
-        
+
         } else if (blogId) {
             queryBuilder['_id'] = blogId
         } else if (userId) {
@@ -84,57 +83,16 @@ var blogController = (Category, Blog) => {
         });
     }
     var blogImages = (req, res) => {
-        //verify if content is available
-        // if (!_.isEmpty(req.body)) {
-            var multerConfig;
-            if (config.uploads.storage === 'local') {
-                multerConfig = {
-                    storage: multer.diskStorage({
-                        destination: function (req, file, cb) {
-                            cb(null, config.uploads.blog.image.dest)
-                        }, filename: function (req, file, cb) {
-                            cb(null, uuid() + '.' + file.mimetype.split('/').pop())
-                        }
-                    })
-                }
-            }
-            //upload image only        
-            multerConfig.fileFilter = require(path.resolve('./config/lib/multer')).imageFileFilter;
-            var upload = multer(multerConfig).single('image');
-            uploadImage()
-                .then((loc) => {
-                    res.json(loc);
-                })
-                .catch(function (err) {
-                    res.status(422).send(err);
-                })
-
-            function uploadImage() {
-                return new Promise((resolve, reject) => {
-                    upload(req, res, (uploadError) => {
-                        if (uploadError) {
-                            console.log(chalk.red('Upload image error'));
-                            console.log(uploadError);
-                            reject(uploadError)
-                        } else {
-                            console.log(req.file);
-                            if(req.file)
-                                resolve({
-                                    location: 'http://' + config.host + ':' + config.port + '/static/' + req.file.filename
-                                });
-                            else 
-                                reject({
-                                    message: 'No file specified'
-                                });
-                        }
-                    })
-                })
-            }
-        // } else {
-        //     res.status(422).send({
-        //         message: 'No file attached'
-        //     });
-        // }
+        // run the promise with the call
+        // imageUpload(req, res, config.uploads.blog.image.dest)().then().catch();
+        let uploadImage = imageUpload(req, res, config.uploads.blog.image.dest);
+        uploadImage()
+            .then((loc) => {
+                res.json(loc);
+            })
+            .catch(function (err) {
+                res.status(422).send(err);
+            });
     }
 
     return {
