@@ -6,39 +6,29 @@ var path = require('path'),
 
 var userController = (User) => {
     /**
-*  Creating users
-*/
+    *  Creating users
+    */
     var create = (req, res) => {
         var user = new User(req.body);
-        user.save((err) => {
-            if (err) {
-                console.log(chalk.red('Error while saving user'));
-                console.log(err);
-                return res.status(422).send({
-                    message: 'Error while creating User'
-                });
-            } else {
-                res.json(user);
-            }
-        });
-    };
-
-    /**
-     * List of users
-     */
-    var list = function (req, res) {
-
-        User.find({}).sort('-created').populate('blogs').exec(function (err, users) {
-            if (err) {
-                console.log(chalk.red('Error while fetching list of users'));
-                console.log(err);
-                return res.status(422).send({
-                    message: 'No Records found'
-                });
-            } else {
-                res.json(users);
-            }
-        });
+        user.uniqueID = req.connection.user;
+        if(user.uniqueID){
+            user.save((err) => {
+                if (err) {
+                    console.log(chalk.red('Error while saving user'));
+                    console.log(err);
+                    return res.status(422).send({
+                        message: 'Error while creating User'
+                    });
+                } else {
+                    res.json(user[0]);
+                }
+            });    
+        } else {
+            console.log(chalk.red('ID not assigned'))
+            return res.status(422).send({
+                message: 'ID not mentioned'
+            });
+        }
     };
     /**
      * get articles by id 
@@ -58,6 +48,21 @@ var userController = (User) => {
         });
     };
 
+    var getUser = (req, res) => {
+        let uniqueID = req.connection.user;
+        User.find({uniqueID : uniqueID}, (err, user) => {
+            if(err){
+                console.log(chalk.red('No data found'));
+                console.log(err);
+                return res.status(422).send({
+                    message: 'User not found'
+                });
+            } else {
+                res.json(user[0]);
+            }
+        });
+    }
+
     var userImages = (req, res) => {
         imageUpload(req, res, config.uploads.user.image.dest)()
             .then((loc) => {
@@ -71,7 +76,7 @@ var userController = (User) => {
 
     return {
         create: create,
-        list: list,
+        getUser: getUser,
         getByEmailId: getByEmailId,
         uploadImage: userImages
     }

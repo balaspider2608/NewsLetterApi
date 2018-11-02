@@ -1,13 +1,23 @@
-var users = require('../controller/user.controller');
+var bodyParser = require('body-parser');
 
 module.exports = (app, { User }) => {
-    //for Users to create 
     var userController = require('../controller/user.controller')(User);
-    app.route('/api/Users')
-        .get(userController.list)
+    //VCN ID fetching only for Users.....
+    app.use((req, res, next) => {
+        var nodeSSPI = require('node-sspi');
+        var nodeSSPIObj = new nodeSSPI({
+            retrieveGroups: true
+        })
+        nodeSSPIObj.authenticate(req, res, function (err) {
+            res.finished || next()
+        })
+    }).route('/api/User')
+        .get(userController.getUser)
         .post(userController.create);
-    app.route('/api/Users/picture')
+    app.use(bodyParser.urlencoded({
+        extended: true
+    })).route('/api/User/picture')
         .post(userController.uploadImage);
-    app.route('/api/Users/:userId')
+    app.route('/api/User/:userId')
         .get(userController.getByEmailId);
 }

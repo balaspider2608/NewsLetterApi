@@ -29,6 +29,7 @@ module.exports = {
     },
     static: {
         blogImage: 'public/blog-images',
-        profileImage: 'public/profile-images'
+        profileImage: 'public/profile-images',
+        staticImages: 'public/static-images'
     }
 };

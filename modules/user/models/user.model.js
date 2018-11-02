@@ -16,12 +16,23 @@ var UserSchema = new Schema({
     },
     email: {
         type: String,
-        default: 'User like to be Anonymous',
-        required: true
+        default: 'User like to be Anonymous'
+    },
+    team: {
+        type: String,
+        default: 'No team known'
     },
     img: {
         type: String,
-        default: 'Default Image'
+        default: ''
+    },
+    isEditor: {
+        type: Boolean,
+        default: false
+    },
+    uniqueID: {
+        type: String,
+        default: 'AnonumusID'
     }
 });
 
