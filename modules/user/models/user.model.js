@@ -24,7 +24,7 @@ var UserSchema = new Schema({
     },
     img: {
         type: String,
-        default: ''
+        default: 'http://localhost:8000/static/defaultUser.png'
     },
     isEditor: {
         type: Boolean,

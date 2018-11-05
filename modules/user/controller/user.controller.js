@@ -9,20 +9,29 @@ var userController = (User) => {
     *  Creating users
     */
     var create = (req, res) => {
+        console.log(req.body);
         var user = new User(req.body);
         user.uniqueID = req.connection.user;
+        delete user._id;
+        console.log(user);
         if(user.uniqueID){
-            user.save((err) => {
-                if (err) {
-                    console.log(chalk.red('Error while saving user'));
+            let query = {
+                uniqueID: user.uniqueID
+            }
+            User.findOneAndUpdate(query, user, {
+                upsert: true,
+                new: true
+            }, (err, Users) => {
+                if(err){
+                    console.log(chalk.red(500));
                     console.log(err);
-                    return res.status(422).send({
-                        message: 'Error while creating User'
+                    return res.status(500).send({
+                        message: 'Error while creating or Updating User'
                     });
                 } else {
-                    res.json(user[0]);
+                    res.json(Users);
                 }
-            });    
+            });
         } else {
             console.log(chalk.red('ID not assigned'))
             return res.status(422).send({

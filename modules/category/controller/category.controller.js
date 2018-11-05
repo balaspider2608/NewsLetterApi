@@ -27,7 +27,7 @@ var categoryController = (Category) => {
         });
     };
     var getById = (req, res) => {
-        Category.findById(req.params.categoryId).populate('blog').exec((err, category) => {
+        Category.findById(req.params.categoryId).exec((err, category) => {
             if (err) {
                 console.log(chalk.red('Error while getting category'));
                 console.log(err);

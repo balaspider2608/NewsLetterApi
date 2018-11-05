@@ -8,21 +8,27 @@ var ArticleSchema = new Schema({
     },
     title: {
         type: String,
-        default: 'No title',
-        required: [true, 'Why no title?']
+        default: 'Title of the article',
     },
-    stitle: {
+    subtitle: {
         type: String,
         default: 'Something is really funny about this article.',
-        required: [true, 'The article attracts more people with subtitle.'],
     },
     body: {
         type: String,
-        required: [true, 'A blog with content is intresting!!!!'],
+        default: 'Add content here',
     },
-    cim: {
+    coverImage: {
         type: String,
         default: 'Cover Page image',
+    },
+    isPublished: {
+        type: Boolean,
+        default: false
+    },
+    isDraft: {
+        type: Boolean,
+        default: true
     },
     author: {
         type: Schema.Types.ObjectId,

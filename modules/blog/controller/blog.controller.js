@@ -6,58 +6,31 @@ var _ = require('lodash'),
 
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
-        if (req.body.blog && req.body.userId && req.body.categoryId) {
-            var blog = new Blog(req.body.blog);
-            blog.author = req.body.userId;
-            blog.category = req.body.categoryId;
-            blog.save((err) => {
-                if (err) {
-                    console.log(chalk.red('Error while saving blog'));
-                    console.log(err);
-                    return res.status(422).send({
-                        message: 'Error while saving blog'
-                    });
-                } else {
-                    Category.findById(req.body.categoryId, (err, category) => {
-                        if (err) {
-                            console.log(chalk.red('Error while saving blog'));
-                            console.log(err);
-                            return res.status(422).send({
-                                message: 'Error while saving blog'
-                            });
-                        } else {
-                            category.blog = _.concat(category.blog, blog._id);
-                            category.save((err) => {
-                                if (err) {
-                                    console.log(chalk.red('Error while saving category'));
-                                    console.log(err);
-                                    return res.status(422).send({
-                                        message: 'Error while saving category'
-                                    });
-                                }
-                                else {
-                                    res.json(blog);
-                                }
-                            });
-                        }
-                    })
-                }
-            })
+        var blog = new Blog(req.body);
+        Blog.findOneAndUpdate({_id: blog.id}, blog, {
+            upsert: true,
+            new: true
+        }, (err, Blog) => {
+            if(err) {
+                console.log(chalk.red(500));
+                console.log(err);
+                return res.status(500).send({
+                    message: 'Error while creating or updating Article'
+                });
+            } else {
+                res.json(Blog);
+            }
+        });
+    };
 
-        } else {
-            res.status(500).send({
-                message: 'No data to save'
-            });
-        }
-    }
     var getArticle = (req, res) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
-        let query = {};
         let presentMonth = new Date().getMonth();
 
         if (fromDate)
             presentMonth = new Date(fromDate).getMonth();
-        let queryBuilder = Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth - 2] } })
+
+        let queryBuilder = Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth - 2] } });
 
         if (categoryId) {
             queryBuilder['category'] = categoryId
@@ -74,6 +47,7 @@ var blogController = (Category, Blog) => {
         queryBuilder.exec((err, articles) => {
             if (err) {
                 console.log(chalk.red('Error occured'));
+                console.log(err);
                 return res.status(422).send({
                     messgae: 'Error occured'
                 });
@@ -82,6 +56,7 @@ var blogController = (Category, Blog) => {
             }
         });
     }
+    
     var blogImages = (req, res) => {
         // run the promise with the call
         // imageUpload(req, res, config.uploads.blog.image.dest)().then().catch();
