@@ -2,16 +2,16 @@ var _ = require('lodash'),
     chalk = require('chalk'),
     path = require('path'),
     config = require(path.resolve('./config/config')),
-    { imageUpload } = require('../../lib');
+    { imageUpload, categorize } = require('../../lib');
 
 var blogController = (Category, Blog) => {
     var create = (req, res) => {
         var blog = new Blog(req.body);
-        Blog.findOneAndUpdate({_id: blog.id}, blog, {
+        Blog.findOneAndUpdate({ _id: blog.id }, blog, {
             upsert: true,
             new: true
         }, (err, Blog) => {
-            if(err) {
+            if (err) {
                 console.log(chalk.red(500));
                 console.log(err);
                 return res.status(500).send({
@@ -33,30 +33,25 @@ var blogController = (Category, Blog) => {
         let queryBuilder = Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth - 2] } });
 
         if (categoryId) {
-            queryBuilder['category'] = categoryId
-
+            queryBuilder['category'] = categoryId;
         } else if (blogId) {
-            queryBuilder['_id'] = blogId
+            queryBuilder['_id'] = blogId;
         } else if (userId) {
-            queryBuilder['author'] = userId
-        } else {
-            return res.status(422).send({
-                message: 'No query specified'
-            });
-        }
+            queryBuilder['author'] = userId;
+        } 
         queryBuilder.exec((err, articles) => {
             if (err) {
                 console.log(chalk.red('Error occured'));
                 console.log(err);
                 return res.status(422).send({
-                    messgae: 'Error occured'
+                    message: 'Error occured'
                 });
             } else {
-                res.json(articles);
+                res.json(categorize(articles));
             }
         });
     }
-    
+
     var blogImages = (req, res) => {
         // run the promise with the call
         // imageUpload(req, res, config.uploads.blog.image.dest)().then().catch();

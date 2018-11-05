@@ -41,7 +41,7 @@ var ArticleSchema = new Schema({
 });
 
 ArticleSchema.statics.list = function (query = {}, callback) {
-    return this.find(query).populate('author', 'name img email').populate('category', 'title _id');
+    return this.find(query).populate('author', 'name img email');
 }
 
 module.exports = mongoose.model('Blog', ArticleSchema);    
