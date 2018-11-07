@@ -9,11 +9,9 @@ var userController = (User) => {
     *  Creating users
     */
     var create = (req, res) => {
-        console.log(req.body);
         var user = new User(req.body);
         user.uniqueID = req.connection.user;
         delete user._id;
-        console.log(user);
         if(user.uniqueID){
             let query = {
                 uniqueID: user.uniqueID

@@ -1,8 +1,8 @@
 var bodyParser = require('body-parser');
 
 
-module.exports = (app, { Category, Blog }) => {
-    var blogController = require('../controller/blog.controller')(Category, Blog);
+module.exports = (app, { Blog, User }) => {
+    var blogController = require('../controller/blog.controller')(Blog, User);
     app.route('/api/Blog')
         .get(blogController.getArticle)
         .post(blogController.create);
@@ -10,4 +10,15 @@ module.exports = (app, { Category, Blog }) => {
         extended: true
     })).route('/api/Blog/picture')
         .post(blogController.uploadImage);
+
+    app.use((req, res, next) => {
+        var nodeSSPI = require('node-sspi');
+        var nodeSSPIObj = new nodeSSPI({
+            retrieveGroups: true
+        })
+        nodeSSPIObj.authenticate(req, res, (err) => {
+            res.finished || next()
+        })
+    }).route('/api/Blog/review')
+        .get(blogController.getBlogForReview);
 }

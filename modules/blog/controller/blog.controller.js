@@ -4,7 +4,7 @@ var _ = require('lodash'),
     config = require(path.resolve('./config/config')),
     { imageUpload, categorize } = require('../../lib');
 
-var blogController = (Category, Blog) => {
+var blogController = (Blog, User) => {
     var create = (req, res) => {
         var blog = new Blog(req.body);
         Blog.findOneAndUpdate({ _id: blog.id }, blog, {
@@ -26,20 +26,36 @@ var blogController = (Category, Blog) => {
     var getArticle = (req, res) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
         let presentMonth = new Date().getMonth();
-
-        if (fromDate)
+        let queryBuilder = {
+            isPublished: true
+        };
+        if (fromDate) {
             presentMonth = new Date(fromDate).getMonth();
-
-        let queryBuilder = Blog.list({ "$expr": { "$gt": [{ "$month": "$created" }, presentMonth - 2] } });
-
+            queryBuilder["$expr"] = { "$gt": [{ "$month": "$created" }, presentMonth - 2] }
+        }
         if (categoryId) {
-            queryBuilder['category'] = categoryId;
+            queryBuilder["category"] = categoryId;
         } else if (blogId) {
-            queryBuilder['_id'] = blogId;
+            queryBuilder = Blog.findById(blogId).populate('author', 'name img email team').exec((err, articles) => {
+                if (err) {
+                    console.log(chalk.red('Error occured'));
+                    console.log(err);
+                    return res.status(422).send({
+                        message: 'Error occured'
+                    });
+                } else {
+                    let result = articles;
+                    if (!blogId && !userId)
+                        result = categorize(articles);
+                    res.json(result);
+                }
+            });
         } else if (userId) {
-            queryBuilder['author'] = userId;
-        } 
-        queryBuilder.exec((err, articles) => {
+            queryBuilder["author"] =  userId;
+            delete queryBuilder.isPublished;
+            console.log(queryBuilder);
+        }
+        Blog.list(queryBuilder).exec((err, articles) => {
             if (err) {
                 console.log(chalk.red('Error occured'));
                 console.log(err);
@@ -47,7 +63,10 @@ var blogController = (Category, Blog) => {
                     message: 'Error occured'
                 });
             } else {
-                res.json(categorize(articles));
+                let result = articles;
+                if (!blogId && !userId)
+                    result = categorize(articles);
+                res.json(result);
             }
         });
     }
@@ -65,10 +84,45 @@ var blogController = (Category, Blog) => {
             });
     }
 
+    var getBlogForReview = (req, res) => {
+        User.findOne({ uniqueID: req.connection.user }, (err, User) => {
+            if (err) {
+                res.status(500).send({
+                    message: 'Internal server error'
+                })
+            } else if(Object.keys(User).length > 0){
+                if (User.isEditor) {
+                    let presentMonth = new Date().getMonth() + 1;
+                    let queryBuilder = {
+                        isDraft: false
+                    };
+                    queryBuilder["$expr"] = { "$gt": [{ "$month": "$created" }, presentMonth - 2] };
+                    Blog.list(queryBuilder).exec((err, articles) => {
+                        if (err) {
+                            console.log(chalk.red('Error occured'));
+                            console.log(err);
+                            return res.status(422).send({
+                                message: 'Error occured'
+                            });
+                        } else {
+                            let result = articles;
+                            res.json(result);
+                        }
+                    });
+                } else {
+                    res.status(401).send({
+                        message: 'Access denied'
+                    });
+                }
+            }
+        })
+    }
+
     return {
         create: create,
         getArticle: getArticle,
-        uploadImage: blogImages
+        uploadImage: blogImages,
+        getBlogForReview: getBlogForReview
     }
 }
 
