@@ -10,7 +10,8 @@
 /build
 
 #static assets
-/public
+/public/blog-images
+/public/profile-images
 
 # misc
 .DS_Store
