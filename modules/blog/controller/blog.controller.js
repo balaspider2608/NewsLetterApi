@@ -10,7 +10,7 @@ var blogController = (Blog, User) => {
         Blog.findOneAndUpdate({ _id: blog.id }, blog, {
             upsert: true,
             new: true
-        }, (err, Blog) => {
+        }).populate('author', 'name img email team').exec((err, Blog) => {
             if (err) {
                 console.log(chalk.red(500));
                 console.log(err);
@@ -21,6 +21,20 @@ var blogController = (Blog, User) => {
                 res.json(Blog);
             }
         });
+        // Blog.findOneAndUpdate({ _id: blog.id }, blog, {
+        //     upsert: true,
+        //     new: true
+        // }, (err, Blog) => {
+        //     if (err) {
+        //         console.log(chalk.red(500));
+        //         console.log(err);
+        //         return res.status(500).send({
+        //             message: 'Error while creating or updating Article'
+        //         });
+        //     } else {
+        //         res.json(Blog);
+        //     }
+        // });
     };
 
     var getArticle = (req, res) => {
@@ -45,9 +59,10 @@ var blogController = (Blog, User) => {
                     });
                 } else {
                     let result = articles;
+                    console.log(result);
                     if (!blogId && !userId)
                         result = categorize(articles);
-                    res.json(result);
+                    return res.json(result);
                 }
             });
         } else if (userId) {
@@ -55,6 +70,7 @@ var blogController = (Blog, User) => {
             delete queryBuilder.isPublished;
             console.log(queryBuilder);
         }
+        console.log('fsj')
         Blog.list(queryBuilder).exec((err, articles) => {
             if (err) {
                 console.log(chalk.red('Error occured'));
