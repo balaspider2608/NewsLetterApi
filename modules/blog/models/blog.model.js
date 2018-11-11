@@ -34,14 +34,34 @@ var ArticleSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    edited: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     category: {
         type: Schema.Types.ObjectId,
         ref: 'Category'
+    },
+    modified: {
+        type: Date
     }
-});
+},
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    }
+);
 
 ArticleSchema.statics.list = function (query = {}, callback) {
-    return this.find(query).select('-body').populate('author', 'name img email');
+    return this.find(query).select('-body').populate('author', 'name img email team').populate('edited', 'name');
 }
+
+ArticleSchema.virtual('date').get(() => {
+    let modifedDate = new Date(this.modified);
+    console.log(this.modified);
+    return modifedDate.getDate() + ' ' + modifedDate.getMonth() + 1;
+});
+
+
 
 module.exports = mongoose.model('Blog', ArticleSchema);    

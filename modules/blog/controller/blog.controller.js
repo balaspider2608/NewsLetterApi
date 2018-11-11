@@ -7,6 +7,7 @@ var _ = require('lodash'),
 var blogController = (Blog, User) => {
     var create = (req, res) => {
         var blog = new Blog(req.body);
+        blog.modified = Date.now();
         Blog.findOneAndUpdate({ _id: blog.id }, blog, {
             upsert: true,
             new: true
@@ -39,18 +40,34 @@ var blogController = (Blog, User) => {
 
     var getArticle = (req, res) => {
         let { categoryId, blogId, userId, fromDate } = req.query;
-        let presentMonth = new Date().getMonth();
-        let queryBuilder = {
-            isPublished: true
-        };
-        if (fromDate) {
-            presentMonth = new Date(fromDate).getMonth();
-            queryBuilder["$expr"] = { "$gt": [{ "$month": "$created" }, presentMonth - 2] }
-        }
-        if (categoryId) {
-            queryBuilder["category"] = categoryId;
-        } else if (blogId) {
-            queryBuilder = Blog.findById(blogId).populate('author', 'name img email team').exec((err, articles) => {
+        if (blogId) {
+            Blog.findById(blogId).populate('author', 'name img email team').populate('edited', 'name').exec((err, articles) => {
+                if (err) {
+                    console.log(chalk.red('Error occured'));
+                    console.log(err);
+                    return res.status(422).send({
+                        message: 'Error occured'
+                    });
+                } else {
+                    return res.json(articles);
+                }
+            });
+        } else {
+            let presentMonth = new Date().getMonth();
+            let queryBuilder = {
+                isPublished: true
+            };
+            if (fromDate) {
+                presentMonth = new Date(fromDate).getMonth();
+                queryBuilder["$expr"] = { "$gt": [{ "$month": "$created" }, presentMonth - 2] }
+            }
+            if (categoryId) {
+                queryBuilder["category"] = categoryId;
+            } else if (userId) {
+                queryBuilder["author"] = userId;
+                delete queryBuilder.isPublished;
+            }
+            Blog.list(queryBuilder).exec((err, articles) => {
                 if (err) {
                     console.log(chalk.red('Error occured'));
                     console.log(err);
@@ -59,32 +76,12 @@ var blogController = (Blog, User) => {
                     });
                 } else {
                     let result = articles;
-                    console.log(result);
-                    if (!blogId && !userId)
+                    if (!userId)
                         result = categorize(articles);
-                    return res.json(result);
+                    res.json(result);
                 }
             });
-        } else if (userId) {
-            queryBuilder["author"] =  userId;
-            delete queryBuilder.isPublished;
-            console.log(queryBuilder);
         }
-        console.log('fsj')
-        Blog.list(queryBuilder).exec((err, articles) => {
-            if (err) {
-                console.log(chalk.red('Error occured'));
-                console.log(err);
-                return res.status(422).send({
-                    message: 'Error occured'
-                });
-            } else {
-                let result = articles;
-                if (!blogId && !userId)
-                    result = categorize(articles);
-                res.json(result);
-            }
-        });
     }
 
     var blogImages = (req, res) => {
@@ -106,11 +103,12 @@ var blogController = (Blog, User) => {
                 res.status(500).send({
                     message: 'Internal server error'
                 })
-            } else if(Object.keys(User).length > 0){
+            } else if (Object.keys(User).length > 0) {
                 if (User.isEditor) {
                     let presentMonth = new Date().getMonth() + 1;
                     let queryBuilder = {
-                        isDraft: false
+                        isDraft: false,
+                        isPublished: false
                     };
                     queryBuilder["$expr"] = { "$gt": [{ "$month": "$created" }, presentMonth - 2] };
                     Blog.list(queryBuilder).exec((err, articles) => {
