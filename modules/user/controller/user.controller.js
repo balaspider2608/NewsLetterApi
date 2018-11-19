@@ -10,6 +10,10 @@ var userController = (User) => {
 
     var createOtherUser = (req, res) => {
         var user = new User(req.body);
+        user.uniqueID = user.uniqueID.toLowerCase();
+        if(user.uniqueID.indexOf("vcn") === -1){
+            user.uniqueID = "vcn\\" + user.uniqueID;
+        }
         user.save((err, data) => {
             if (err) {
                 console.log(chalk.red(500));
@@ -25,7 +29,7 @@ var userController = (User) => {
 
     var create = (req, res) => {
         var user = new User(req.body);
-        user.uniqueID = req.connection.user;
+        user.uniqueID = req.connection.user.toLowerCase();
         delete user._id;
         if (user.uniqueID) {
             let query = {
@@ -57,8 +61,9 @@ var userController = (User) => {
      */
     var getByUserId = (req, res) => {
         // var id = req.params.userId;
+        let uniqueID = "VCN\\" + req.query.userId; 
         User.find({
-            uniqueID: "VCN\\" + req.query.userId.toLowerCase()
+            uniqueID: uniqueID.toLowerCase()
         }, (err, user) => {
             if (err) {
                 console.log(chalk.red('No data found '));
