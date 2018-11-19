@@ -1,6 +1,25 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+var CardSchema = new Schema({
+    created: {
+        type: Date,
+        default:  Date.now
+    },
+    title: {
+        type: String,
+        default: 'Title of did you know'
+    },
+    image: {
+        type: String,
+        default: ''
+    },
+    body: {
+        type: String,
+        default: 'Body of the card'
+    }
+});
+
 var ArticleSchema = new Schema({
     created: {
         type: Date,
@@ -42,6 +61,9 @@ var ArticleSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Category'
     },
+    list: [
+        CardSchema
+    ],
     modified: {
         type: Date
     }

@@ -20,6 +20,10 @@ var CategorySchema = new Schema({
             }
         }), 'Title between 3 to 20 are more funny.']
     },
+    isBody: {
+        type: Boolean,
+        default: true
+    },
     blog: [{
         type: Schema.Types.ObjectId,
         ref: 'Blog' 
