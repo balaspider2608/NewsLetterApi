@@ -3,6 +3,13 @@ var bodyParser = require('body-parser');
 module.exports = (app, { User }) => {
     var userController = require('../controller/user.controller')(User);
     //VCN ID fetching only for Users.....
+    app.use(bodyParser.urlencoded({
+        extended: true
+    })).route('/api/User/picture')
+        .post(userController.uploadImage);
+    app.route('/api/User/byId')
+        .get(userController.getByUserId)
+        .post(userController.createOtherUser);
     app.use((req, res, next) => {
         var nodeSSPI = require('node-sspi');
         var nodeSSPIObj = new nodeSSPI({
@@ -14,10 +21,4 @@ module.exports = (app, { User }) => {
     }).route('/api/User')
         .get(userController.getUser)
         .post(userController.create);
-    app.use(bodyParser.urlencoded({
-        extended: true
-    })).route('/api/User/picture')
-        .post(userController.uploadImage);
-    app.route('/api/User/:userId')
-        .get(userController.getByEmailId);
 }

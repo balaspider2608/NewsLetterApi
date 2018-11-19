@@ -22,20 +22,6 @@ var blogController = (Blog, User) => {
                 res.json(Blog);
             }
         });
-        // Blog.findOneAndUpdate({ _id: blog.id }, blog, {
-        //     upsert: true,
-        //     new: true
-        // }, (err, Blog) => {
-        //     if (err) {
-        //         console.log(chalk.red(500));
-        //         console.log(err);
-        //         return res.status(500).send({
-        //             message: 'Error while creating or updating Article'
-        //         });
-        //     } else {
-        //         res.json(Blog);
-        //     }
-        // });
     };
 
     var getArticle = (req, res) => {
