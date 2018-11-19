@@ -10,7 +10,7 @@ var CardSchema = new Schema({
         type: String,
         default: 'Title of did you know'
     },
-    image: {
+    coverImage: {
         type: String,
         default: ''
     },
